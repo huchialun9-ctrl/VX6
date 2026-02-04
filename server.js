@@ -1,40 +1,45 @@
 const express = require('express');
-const { Client, GatewayIntentBits, PermissionsBitField, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require('discord.js');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const session = require('express-session');
-const axios = require('axios');
-const sqlite3 = require('sqlite3').verbose();
+const { Client, GatewayIntentBits } = require('discord.js');
 const path = require('path');
-const fs = require('fs');
-require('dotenv').config();
+const cors = require('cors');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 
-// Discord Bot 設定
+app.use(cors());
+app.use(express.json());
+
+// --- 修正路徑：讓 Express 去 public 資料夾找檔案 ---
+app.use(express.static(path.join(__dirname, 'public')));
+
+// 根目錄路由：精確指向 public/index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/health', (req, res) => res.status(200).send('OK'));
+
+// --- Discord 機器人部分 ---
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent
+        GatewayIntentBits.MessageContent // 這行對應步驟 1 的權限
     ]
 });
 
-// 中間件設定
-app.use(cors({
-    origin: process.env.NODE_ENV === 'production' 
-        ? ['https://vx6-production.up.railway.app', 'https://discord.com']
-        : ['http://localhost:3000', 'https://discord.com'],
-    credentials: true
-}));
-app.use(bodyParser.json());
-app.use(express.static('public'));
+client.on('ready', () => {
+    console.log(`✅ 機器人已成功上線：${client.user.tag}`);
+});
 
-// Session 設定
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'sentinel-ticket-secret-key',
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 伺服器運行於 http://0.0.0.0:${PORT}`);
+});
+
+// 使用環境變數登入 (請確保 Railway Variables 裡有 DISCORD_BOT_TOKEN)
+client.login(process.env.DISCORD_BOT_TOKEN).catch(err => {
+    console.error("❌ 登入失敗：", err.message);
+});    secret: process.env.SESSION_SECRET || 'sentinel-ticket-secret-key',
     resave: false,
     saveUninitialized: false,
     cookie: {

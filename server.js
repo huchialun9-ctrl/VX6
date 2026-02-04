@@ -9,32 +9,41 @@ const PORT = process.env.PORT || 8000;
 app.use(cors());
 app.use(express.json());
 
-// --- 修正路徑：讓 Express 去 public 資料夾找檔案 ---
+// --- 修正重點：確保讀取 public 資料夾 ---
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 根目錄路由：精確指向 public/index.html
+// 根目錄路由
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// 健康檢查路由 (讓 Railway 變綠燈)
 app.get('/health', (req, res) => res.status(200).send('OK'));
 
-// --- Discord 機器人部分 ---
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent // 這行對應步驟 1 的權限
+        GatewayIntentBits.MessageContent 
     ]
 });
 
 client.on('ready', () => {
-    console.log(`✅ 機器人已成功上線：${client.user.tag}`);
+    console.log(`✅ 機器人已上線：${client.user.tag}`);
 });
 
+// 啟動伺服器
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 伺服器運行於 http://0.0.0.0:${PORT}`);
 });
+
+// 使用環境變數登入
+const TOKEN = process.env.DISCORD_BOT_TOKEN;
+if (TOKEN) {
+    client.login(TOKEN).catch(err => {
+        console.error("❌ 機器人登入失敗，請確認 Variables 裡的 Token 是最新的：", err.message);
+    });
+}});
 
 // 使用環境變數登入 (請確保 Railway Variables 裡有 DISCORD_BOT_TOKEN)
 client.login(process.env.DISCORD_BOT_TOKEN).catch(err => {

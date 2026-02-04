@@ -2,39 +2,52 @@ const express = require('express');
 const { Client, GatewayIntentBits } = require('discord.js');
 const path = require('path');
 const cors = require('cors');
+const axios = require('axios'); // 記得確認 package.json 有 axios
 
 const app = express();
-// 自動讀取 Railway Variables 裡的 PORT，若沒設定則預設 8000
 const PORT = process.env.PORT || 8000;
 
 app.use(cors());
 app.use(express.json());
-
-// 確保指向 public 資料夾，讓網頁能顯示
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 根目錄路由
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// --- Discord OAuth2 設定 (從 Railway Variables 讀取) ---
+const CLIENT_ID = process.env.DISCORD_CLIENT_ID;
+const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
+const REDIRECT_URI = process.env.DISCORD_REDIRECT_URI;
+
+// 1. 處理登入請求：跳轉到 Discord 授權頁面
+app.get('/auth/discord', (req, res) => {
+    const url = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds`;
+    res.redirect(url);
 });
 
-// 健康檢查路由：讓 Railway 知道程式還活著 (解決 Healthcheck failed)
+// 2. 處理回傳 (Callback)：Discord 授權完後會回到這裡
+app.get('/auth/discord/callback', async (req, res) => {
+    const { code } = req.query;
+    if (code) {
+        try {
+            // 拿 Code 換 Access Token (這部分通常在 script.js 處理，或者這裡處理後給前端)
+            res.send("授權成功！請回到控制台。");
+        } catch (err) {
+            res.status(500).send("授權失敗");
+        }
+    }
+});
+
+// 健康檢查與路由
 app.get('/health', (req, res) => res.status(200).send('OK'));
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 const client = new Client({
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent // 你已經開好的權限
-    ]
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent]
 });
 
-client.on('ready', () => {
-    console.log(`✅ 機器人已成功上線：${client.user.tag}`);
-});
-
-// 啟動伺服器：必須監聽 0.0.0.0
 app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 控制台運行於埠號 ${PORT}`);
+});
+
+client.login(process.env.DISCORD_BOT_TOKEN);app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 伺服器運行於埠號 ${PORT}`);
 });
 

@@ -1,40 +1,120 @@
-/* NFT風格 - SentinelTicket 系統樣式 */
+:root {
+    --bg-main: #000000;          /* 純黑背景 */
+    --bg-card: #111111;          /* 深灰卡片 */
+    --accent-color: #3b82f6;     /* 科技藍 */
+    --text-primary: #f8fafc;     /* 近純白文字 */
+    --text-secondary: #94a3b8;   /* 灰文字 */
+    --border-color: #262626;     /* 極細深灰邊框 */
+    --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+}
 
-/* 基礎設定 */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-:root {
-    /* NFT 主色調 */
-    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    --gold-gradient: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
-    
-    /* 背景色 - 更深的黑色主題 */
-    --bg-primary: #000000;
-    --bg-secondary: #0a0a0a;
-    --bg-tertiary: #111111;
-    --bg-card: #0f0f0f;
-    --bg-glass: rgba(255, 255, 255, 0.03);
-    
-    /* 文字色 */
-    --text-primary: #ffffff;
-    --text-secondary: #b8b8ff;
-    --text-accent: #00d4ff;
-    --text-gold: #ffd700;
-    
-    /* 邊框和陰影 */
-    --border-neon: #00d4ff;
-    --border-gold: #ffd700;
-    --shadow-neon: 0 0 20px rgba(0, 212, 255, 0.3);
-    --shadow-gold: 0 0 20px rgba(255, 215, 0, 0.3);
-    --shadow-purple: 0 0 20px rgba(118, 75, 162, 0.3);
-    
-    /* 動畫 */
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    overflow-x: hidden;
+}
+
+/* 側邊欄：專業收納感 */
+.sidebar {
+    width: 240px;
+    height: 100vh;
+    background-color: var(--bg-main);
+    border-right: 1px solid var(--border-color);
+    padding: 1.5rem;
+    position: fixed;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2.5rem;
+}
+
+.nav-item {
+    list-style: none;
+    margin-bottom: 0.25rem;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.6rem 1rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: 0.2s;
+}
+
+.nav-link:hover, .nav-item.active .nav-link {
+    background-color: #1a1a1a;
+    color: var(--text-primary);
+}
+
+/* 主要內容區 */
+.main-content {
+    margin-left: 240px;
+    padding: 2rem;
+    background-color: var(--bg-main);
+}
+
+/* 數據卡片：捨棄發光效果，改用極簡線條 */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+
+.stat-card h3 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-card p {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Discord 登入按鈕：純白極簡風格 */
+#loginBtn {
+    background-color: var(--text-primary);
+    color: var(--bg-main);
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#loginBtn:hover {
+    background-color: #e2e8f0;
+}    /* 動畫 */
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --glow-animation: glow 2s ease-in-out infinite alternate;
 }

@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VX6 ticket</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 側邊欄 -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>VX6 ticket</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul class="nav-menu">
+                    <li class="nav-item active" data-page="dashboard">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>儀表板</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-page="tickets">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-ticket-alt"></i>
+                            <span>工單管理</span>
+                            <span class="badge" id="ticketBadge">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-page="categories">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-tags"></i>
+                            <span>分類設定</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-page="staff">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-users-cog"></i>
+                            <span>管理員</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-page="analytics">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>數據分析</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-page="settings">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-cog"></i>
+                            <span>系統設定</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-page="docs">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-book"></i>
+                            <span>使用文檔</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-page="commands">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-terminal"></i>
+                            <span>指令說明</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-info" id="userInfo">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name">未登入</span>
+                        <span class="user-role">訪客</span>
+                    </div>
+                </div>
+                <button class="logout-btn" id="logoutBtn" style="display: none;">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- 主要內容區域 -->
+        <main class="main-content">
+            <!-- 頂部導航 -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title" id="pageTitle">儀表板</h1>
+                </div>
+                <div class="header-right">
+                    <div class="header-actions">
+                        <button class="action-btn" id="refreshBtn" title="重新整理">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button class="action-btn" id="notificationBtn" title="通知">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge">3</span>
+                        </button>
+                        <button class="action-btn" id="loginBtn" title="登入">
+                            <i class="fab fa-discord"></i>
+                            <span>Discord 登入</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 頁面內容 -->
+            <div class="page-content">
+                <!-- 儀表板頁面 -->
+                <div class="page" id="dashboardPage">
+                    <!-- 伺服器選擇器 -->
+                    <div class="server-selector" id="serverSelector" style="display: none;">
+                        <h3>🌐 選擇伺服器</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">請選擇要管理的Discord伺服器：</p>
+                        <div class="server-grid" id="serverGrid">
+                            <!-- 伺服器卡片將由 JavaScript 動態生成 -->
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <!-- 統計卡片 -->
+                        <div class="stats-row">
+                            <div class="stat-card">
+                                <div class="stat-icon active">
+                                    <i class="fas fa-ticket-alt"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="activeTickets">0</h3>
+                                    <p>進行中工單</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon pending">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="pendingTickets">0</h3>
+                                    <p>待處理工單</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon closed">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="closedTickets">0</h3>
+                                    <p>已結案工單</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon staff">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="onlineStaff">0</h3>
+                                    <p>線上管理員</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 當前伺服器信息 -->
+                        <div class="current-server-info" id="currentServerInfo" style="display: none;">
+                            <div class="server-info-card">
+                                <div class="server-header">
+                                    <div class="server-avatar">
+                                        <i class="fas fa-server"></i>
+                                    </div>
+                                    <div class="server-details">
+                                        <h3 id="currentServerName">未選擇伺服器</h3>
+                                        <p id="currentServerStats">請選擇一個伺服器開始管理</p>
+                                    </div>
+                                    <button class="btn-change-server" onclick="showServerSelector()">
+                                        <i class="fas fa-exchange-alt"></i> 切換伺服器
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 快速操作 -->
+                        <div class="quick-actions">
+                            <h2>⚡ 快速操作</h2>
+                            <div class="action-grid">
+                                <button class="quick-action-btn" onclick="createTicketPanel()">
+                                    <i class="fas fa-plus-circle"></i>
+                                    <span>建立工單面板</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="viewActiveTickets()">
+                                    <i class="fas fa-list"></i>
+                                    <span>查看進行中工單</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="manageCategories()">
+                                    <i class="fas fa-tags"></i>
+                                    <span>管理分類</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="viewAnalytics()">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span>查看統計</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 最近活動 -->
+                        <div class="recent-activity">
+                            <h2>📊 最近活動</h2>
+                            <div class="activity-list" id="activityList">
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        <i class="fas fa-rocket"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <p><strong>系統已升級為 NFT 風格</strong></p>
+                                        <span class="activity-time">剛剛</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 工單管理頁面 -->
+                <div class="page" id="ticketsPage" style="display: none;">
+                    <div class="page-header">
+                        <h2>工單管理</h2>
+                        <div class="page-actions">
+                            <div class="filter-group">
+                                <select id="statusFilter" class="filter-select">
+                                    <option value="all">所有狀態</option>
+                                    <option value="open">進行中</option>
+                                    <option value="pending">待處理</option>
+                                    <option value="closed">已關閉</option>
+                                </select>
+                                <select id="categoryFilter" class="filter-select">
+                                    <option value="all">所有分類</option>
+                                    <option value="support">技術支援</option>
+                                    <option value="report">申訴檢舉</option>
+                                    <option value="business">商業合作</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" onclick="refreshTickets()">
+                                <i class="fas fa-sync-alt"></i> 重新整理
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="tickets-container">
+                        <div class="tickets-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>工單 ID</th>
+                                        <th>標題</th>
+                                        <th>用戶</th>
+                                        <th>分類</th>
+                                        <th>狀態</th>
+                                        <th>負責人</th>
+                                        <th>建立時間</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ticketsTableBody">
+                                    <!-- 工單列表將由 JavaScript 動態生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 分類設定頁面 -->
+                <div class="page" id="categoriesPage" style="display: none;">
+                    <div class="page-header">
+                        <h2>分類設定</h2>
+                        <div class="page-actions">
+                            <button class="btn btn-primary" onclick="addCategory()">
+                                <i class="fas fa-plus"></i> 新增分類
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="categories-container">
+                        <div class="categories-grid" id="categoriesGrid">
+                            <!-- 分類卡片將由 JavaScript 動態生成 -->
+                        </div>
+                    </div>
+
+                    <!-- 新增/編輯分類模態框 -->
+                    <div class="modal" id="categoryModal" style="display: none;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 id="categoryModalTitle">新增分類</h3>
+                                <button class="modal-close" onclick="closeCategoryModal()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="categoryForm">
+                                    <div class="form-group">
+                                        <label for="categoryName">分類名稱</label>
+                                        <input type="text" id="categoryName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="categoryEmoji">表情符號</label>
+                                        <input type="text" id="categoryEmoji" placeholder="🎫">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="categoryColor">顏色</label>
+                                        <input type="color" id="categoryColor" value="#3b82f6">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="categoryRole">對應角色 ID</label>
+                                        <input type="text" id="categoryRole" placeholder="可選">
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" onclick="closeCategoryModal()">取消</button>
+                                <button class="btn btn-primary" onclick="saveCategory()">儲存</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 管理員管理頁面 -->
+                <div class="page" id="staffPage" style="display: none;">
+                    <div class="page-header">
+                        <h2>管理員管理</h2>
+                        <div class="page-actions">
+                            <button class="btn btn-primary" onclick="addStaffMember()">
+                                <i class="fas fa-user-plus"></i> 新增管理員
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="staff-container">
+                        <div class="staff-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>用戶</th>
+                                        <th>角色</th>
+                                        <th>狀態</th>
+                                        <th>加入時間</th>
+                                        <th>處理工單數</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="staffTableBody">
+                                    <!-- 管理員列表將由 JavaScript 動態生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 新增管理員模態框 -->
+                    <div class="modal" id="staffModal" style="display: none;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3>新增管理員</h3>
+                                <button class="modal-close" onclick="closeStaffModal()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="staffForm">
+                                    <div class="form-group">
+                                        <label for="staffUserId">用戶 ID</label>
+                                        <input type="text" id="staffUserId" required placeholder="Discord 用戶 ID">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="staffRole">角色</label>
+                                        <select id="staffRole" required>
+                                            <option value="admin">系統管理員</option>
+                                            <option value="moderator">一般管理員</option>
+                                            <option value="support">客服人員</option>
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" onclick="closeStaffModal()">取消</button>
+                                <button class="btn btn-primary" onclick="saveStaffMember()">新增</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 數據分析頁面 -->
+                <div class="page" id="analyticsPage" style="display: none;">
+                    <div class="page-header">
+                        <h2>數據分析</h2>
+                        <div class="page-actions">
+                            <select id="analyticsTimeRange" onchange="updateAnalytics()">
+                                <option value="today">今天</option>
+                                <option value="week" selected>本週</option>
+                                <option value="month">本月</option>
+                                <option value="year">今年</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="exportAnalytics()">
+                                <i class="fas fa-download"></i> 匯出報告
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-container">
+                        <!-- 統計概覽 -->
+                        <div class="analytics-overview">
+                            <div class="analytics-card">
+                                <div class="analytics-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="analytics-info">
+                                    <h3 id="totalTicketsAnalytics">0</h3>
+                                    <p>總工單數</p>
+                                    <span class="analytics-change positive" id="ticketsChange">+12%</span>
+                                </div>
+                            </div>
+                            <div class="analytics-card">
+                                <div class="analytics-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="analytics-info">
+                                    <h3 id="avgResponseTime">2.5h</h3>
+                                    <p>平均回應時間</p>
+                                    <span class="analytics-change negative" id="responseTimeChange">-8%</span>
+                                </div>
+                            </div>
+                            <div class="analytics-card">
+                                <div class="analytics-icon">
+                                    <i class="fas fa-percentage"></i>
+                                </div>
+                                <div class="analytics-info">
+                                    <h3 id="resolutionRate">94%</h3>
+                                    <p>解決率</p>
+                                    <span class="analytics-change positive" id="resolutionChange">+3%</span>
+                                </div>
+                            </div>
+                            <div class="analytics-card">
+                                <div class="analytics-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="analytics-info">
+                                    <h3 id="satisfactionRate">4.8</h3>
+                                    <p>滿意度評分</p>
+                                    <span class="analytics-change positive" id="satisfactionChange">+0.2</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 圖表區域 -->
+                        <div class="charts-container">
+                            <div class="chart-card">
+                                <h3>工單趨勢</h3>
+                                <div class="chart-placeholder" id="ticketTrendChart">
+                                    <canvas id="trendCanvas" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-card">
+                                <h3>分類分布</h3>
+                                <div class="chart-placeholder" id="categoryChart">
+                                    <canvas id="categoryCanvas" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 詳細統計 -->
+                        <div class="detailed-stats">
+                            <div class="stats-card">
+                                <h3>管理員效能</h3>
+                                <div class="staff-performance" id="staffPerformance">
+                                    <!-- 管理員效能數據 -->
+                                </div>
+                            </div>
+                            <div class="stats-card">
+                                <h3>熱門問題</h3>
+                                <div class="popular-issues" id="popularIssues">
+                                    <!-- 熱門問題列表 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 系統設定頁面 -->
+                <div class="page" id="settingsPage" style="display: none;">
+                    <div class="page-header">
+                        <h2>系統設定</h2>
+                        <div class="page-actions">
+                            <button class="btn btn-primary" onclick="saveAllSettings()">
+                                <i class="fas fa-save"></i> 儲存設定
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-container">
+                        <!-- 基本設定 -->
+                        <div class="settings-section">
+                            <h3>基本設定</h3>
+                            <div class="settings-grid">
+                                <div class="setting-item">
+                                    <label for="maxTicketsPerUser">每用戶最大工單數</label>
+                                    <input type="number" id="maxTicketsPerUser" value="3" min="1" max="10">
+                                </div>
+                                <div class="setting-item">
+                                    <label for="autoCloseTime">自動關閉時間 (小時)</label>
+                                    <input type="number" id="autoCloseTime" value="48" min="1" max="168">
+                                </div>
+                                <div class="setting-item">
+                                    <label for="ticketCategoryId">工單分類 ID</label>
+                                    <input type="text" id="ticketCategoryId" placeholder="Discord 分類 ID">
+                                </div>
+                                <div class="setting-item">
+                                    <label for="logChannelId">日誌頻道 ID</label>
+                                    <input type="text" id="logChannelId" placeholder="Discord 頻道 ID">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 通知設定 -->
+                        <div class="settings-section">
+                            <h3>通知設定</h3>
+                            <div class="settings-grid">
+                                <div class="setting-item">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="enableNewTicketNotification" checked>
+                                        <span class="checkmark"></span>
+                                        新工單通知
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="enableCloseTicketNotification" checked>
+                                        <span class="checkmark"></span>
+                                        工單關閉通知
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="enableInactivityWarning" checked>
+                                        <span class="checkmark"></span>
+                                        閒置警告
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <label for="notificationRoleId">通知角色 ID</label>
+                                    <input type="text" id="notificationRoleId" placeholder="Discord 角色 ID">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 安全設定 -->
+                        <div class="settings-section">
+                            <h3>安全設定</h3>
+                            <div class="settings-grid">
+                                <div class="setting-item">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="enableRateLimit" checked>
+                                        <span class="checkmark"></span>
+                                        啟用速率限制
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <label for="rateLimitCount">速率限制次數</label>
+                                    <input type="number" id="rateLimitCount" value="5" min="1" max="20">
+                                </div>
+                                <div class="setting-item">
+                                    <label for="rateLimitWindow">速率限制時間窗口 (分鐘)</label>
+                                    <input type="number" id="rateLimitWindow" value="10" min="1" max="60">
+                                </div>
+                                <div class="setting-item">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="enableAutoBlacklist">
+                                        <span class="checkmark"></span>
+                                        自動黑名單
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 外觀設定 -->
+                        <div class="settings-section">
+                            <h3>外觀設定</h3>
+                            <div class="settings-grid">
+                                <div class="setting-item">
+                                    <label for="embedColor">嵌入訊息顏色</label>
+                                    <input type="color" id="embedColor" value="#3b82f6">
+                                </div>
+                                <div class="setting-item">
+                                    <label for="botStatus">Bot 狀態訊息</label>
+                                    <input type="text" id="botStatus" value="工單系統 | /help">
+                                </div>
+                                <div class="setting-item">
+                                    <label for="welcomeMessage">歡迎訊息</label>
+                                    <textarea id="welcomeMessage" rows="3">歡迎使用工單系統！請描述您的問題，我們將盡快為您處理。</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 備份與還原 -->
+                        <div class="settings-section">
+                            <h3>備份與還原</h3>
+                            <div class="backup-actions">
+                                <button class="btn btn-secondary" onclick="exportSettings()">
+                                    <i class="fas fa-download"></i> 匯出設定
+                                </button>
+                                <button class="btn btn-secondary" onclick="importSettings()">
+                                    <i class="fas fa-upload"></i> 匯入設定
+                                </button>
+                                <button class="btn btn-warning" onclick="resetSettings()">
+                                    <i class="fas fa-undo"></i> 重置為預設
+                                </button>
+                                <input type="file" id="settingsFileInput" accept=".json" style="display: none;" onchange="handleSettingsImport(event)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 使用文檔頁面 -->
+                <div class="page" id="docsPage" style="display: none;">
+                    <div class="docs-container">
+                        <div class="docs-header">
+                            <h2>📚 使用文檔</h2>
+                            <p>完整的 SentinelTicket 使用指南</p>
+                        </div>
+
+                        <div class="docs-content">
+                            <!-- 快速開始 -->
+                            <section class="doc-section">
+                                <h3><i class="fas fa-rocket"></i> 快速開始</h3>
+                                <div class="doc-card">
+                                    <h4>1. 系統初始化</h4>
+                                    <p>首次使用需要初始化系統設定：</p>
+                                    <div class="code-block">
+                                        <code>/setup</code>
+                                    </div>
+                                    <p>此指令會創建必要的分類和基本配置。</p>
+                                </div>
+
+                                <div class="doc-card">
+                                    <h4>2. 創建工單面板</h4>
+                                    <p>在指定頻道創建工單按鈕：</p>
+                                    <div class="code-block">
+                                        <code>/panel</code>
+                                    </div>
+                                    <p>用戶點擊按鈕即可開始創建工單。</p>
+                                </div>
+
+                                <div class="doc-card">
+                                    <h4>3. 添加管理員</h4>
+                                    <p>將用戶添加到管理員列表：</p>
+                                    <div class="code-block">
+                                        <code>/add @用戶名</code>
+                                    </div>
+                                    <p>管理員可以領取和處理工單。</p>
+                                </div>
+                            </section>
+
+                            <!-- 工單流程 -->
+                            <section class="doc-section">
+                                <h3><i class="fas fa-flow-chart"></i> 工單流程</h3>
+                                <div class="doc-card">
+                                    <h4>用戶開票流程</h4>
+                                    <ol class="doc-list">
+                                        <li>點擊工單面板的「建立工單」按鈕</li>
+                                        <li>從下拉選單選擇工單分類</li>
+                                        <li>系統自動創建專屬頻道</li>
+                                        <li>在頻道中描述問題並等待回覆</li>
+                                        <li>問題解決後點擊「關閉工單」</li>
+                                    </ol>
+                                </div>
+
+                                <div class="doc-card">
+                                    <h4>管理員處理流程</h4>
+                                    <ol class="doc-list">
+                                        <li>收到新工單通知</li>
+                                        <li>點擊「領取工單」按鈕</li>
+                                        <li>與用戶溝通解決問題</li>
+                                        <li>問題解決後關閉工單</li>
+                                        <li>系統自動生成對話記錄</li>
+                                    </ol>
+                                </div>
+                            </section>
+
+                            <!-- 功能特色 -->
+                            <section class="doc-section">
+                                <h3><i class="fas fa-star"></i> 功能特色</h3>
+                                <div class="features-grid">
+                                    <div class="feature-card">
+                                        <div class="feature-icon">
+                                            <i class="fas fa-shield-alt"></i>
+                                        </div>
+                                        <h4>隱私保護</h4>
+                                        <p>每個工單都有獨立頻道，確保對話隱私</p>
+                                    </div>
+                                    <div class="feature-card">
+                                        <div class="feature-icon">
+                                            <i class="fas fa-robot"></i>
+                                        </div>
+                                        <h4>自動化管理</h4>
+                                        <p>自動權限設定、分類分配、超時處理</p>
+                                    </div>
+                                    <div class="feature-card">
+                                        <div class="feature-icon">
+                                            <i class="fas fa-chart-line"></i>
+                                        </div>
+                                        <h4>數據統計</h4>
+                                        <p>完整的工單統計和效能分析</p>
+                                    </div>
+                                    <div class="feature-card">
+                                        <div class="feature-icon">
+                                            <i class="fas fa-ban"></i>
+                                        </div>
+                                        <h4>防濫用機制</h4>
+                                        <p>工單數量限制和黑名單系統</p>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- 常見問題 -->
+                            <section class="doc-section">
+                                <h3><i class="fas fa-question-circle"></i> 常見問題</h3>
+                                <div class="faq-container">
+                                    <div class="faq-item">
+                                        <div class="faq-question">
+                                            <i class="fas fa-chevron-right"></i>
+                                            <span>如何修改工單分類？</span>
+                                        </div>
+                                        <div class="faq-answer">
+                                            <p>前往「分類設定」頁面，可以添加、編輯或刪除工單分類。每個分類可以設定不同的顏色、表情符號和對應的管理員角色。</p>
+                                        </div>
+                                    </div>
+                                    <div class="faq-item">
+                                        <div class="faq-question">
+                                            <i class="fas fa-chevron-right"></i>
+                                            <span>工單會自動關閉嗎？</span>
+                                        </div>
+                                        <div class="faq-answer">
+                                            <p>是的，如果工單在24小時內沒有任何回覆，系統會自動發送提醒。48小時後仍無回覆則自動關閉工單。</p>
+                                        </div>
+                                    </div>
+                                    <div class="faq-item">
+                                        <div class="faq-question">
+                                            <i class="fas fa-chevron-right"></i>
+                                            <span>如何查看歷史工單？</span>
+                                        </div>
+                                        <div class="faq-answer">
+                                            <p>在「工單管理」頁面可以查看所有歷史工單，包括已關閉的工單。每個工單都保存完整的對話記錄。</p>
+                                        </div>
+                                    </div>
+                                    <div class="faq-item">
+                                        <div class="faq-question">
+                                            <i class="fas fa-chevron-right"></i>
+                                            <span>如何設定管理員權限？</span>
+                                        </div>
+                                        <div class="faq-answer">
+                                            <p>使用 <code>/add @用戶名</code> 添加管理員，或在「管理員管理」頁面進行詳細的權限配置。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 指令說明頁面 -->
+                <div class="page" id="commandsPage" style="display: none;">
+                    <div class="commands-container">
+                        <div class="commands-header">
+                            <h2>⌨️ 指令說明</h2>
+                            <p>完整的 Discord Bot 指令列表</p>
+                        </div>
+
+                        <div class="commands-content">
+                            <!-- 管理員指令 -->
+                            <section class="command-section">
+                                <h3><i class="fas fa-crown"></i> 管理員指令</h3>
+                                <div class="command-grid">
+                                    <div class="command-card">
+                                        <div class="command-header">
+                                            <h4>/setup</h4>
+                                            <span class="command-badge admin">管理員</span>
+                                        </div>
+                                        <p class="command-description">初始化工單系統，創建必要的分類和基本配置</p>
+                                        <div class="command-usage">
+                                            <strong>用法：</strong>
+                                            <code>/setup</code>
+                                        </div>
+                                        <div class="command-example">
+                                            <strong>範例：</strong>
+                                            <div class="code-block">/setup</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="command-card">
+                                        <div class="command-header">
+                                            <h4>/panel</h4>
+                                            <span class="command-badge admin">管理員</span>
+                                        </div>
+                                        <p class="command-description">在當前頻道創建工單面板，用戶可點擊按鈕開票</p>
+                                        <div class="command-usage">
+                                            <strong>用法：</strong>
+                                            <code>/panel [標題] [描述]</code>
+                                        </div>
+                                        <div class="command-params">
+                                            <strong>參數：</strong>
+                                            <ul>
+                                                <li><code>標題</code> (可選) - 面板標題</li>
+                                                <li><code>描述</code> (可選) - 面板描述</li>
+                                            </ul>
+                                        </div>
+                                        <div class="command-example">
+                                            <strong>範例：</strong>
+                                            <div class="code-block">/panel 標題:客服支援 描述:需要幫助請點擊下方按鈕</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="command-card">
+                                        <div class="command-header">
+                                            <h4>/add</h4>
+                                            <span class="command-badge admin">管理員</span>
+                                        </div>
+                                        <p class="command-description">將用戶添加到管理員列表，授予工單處理權限</p>
+                                        <div class="command-usage">
+                                            <strong>用法：</strong>
+                                            <code>/add &lt;用戶&gt; [角色]</code>
+                                        </div>
+                                        <div class="command-params">
+                                            <strong>參數：</strong>
+                                            <ul>
+                                                <li><code>用戶</code> (必需) - 要添加的用戶</li>
+                                                <li><code>角色</code> (可選) - admin/moderator/support</li>
+                                            </ul>
+                                        </div>
+                                        <div class="command-example">
+                                            <strong>範例：</strong>
+                                            <div class="code-block">/add 用戶:@張三 角色:moderator</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="command-card">
+                                        <div class="command-header">
+                                            <h4>/remove</h4>
+                                            <span class="command-badge admin">管理員</span>
+                                        </div>
+                                        <p class="command-description">從管理員列表中移除用戶</p>
+                                        <div class="command-usage">
+                                            <strong>用法：</strong>
+                                            <code>/remove &lt;用戶&gt;</code>
+                                        </div>
+                                        <div class="command-params">
+                                            <strong>參數：</strong>
+                                            <ul>
+                                                <li><code>用戶</code> (必需) - 要移除的用戶</li>
+                                            </ul>
+                                        </div>
+                                        <div class="command-example">
+                                            <strong>範例：</strong>
+                                            <div class="code-block">/remove 用戶:@張三</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="command-card">
+                                        <div class="command-header">
+                                            <h4>/blacklist</h4>
+                                            <span class="command-badge admin">管理員</span>
+                                        </div>
+                                        <p class="command-description">將用戶加入黑名單，禁止開票</p>
+                                        <div class="command-usage">
+                                            <strong>用法：</strong>
+                                            <code>/blacklist &lt;用戶&gt; [原因] [時間]</code>
+                                        </div>
+                                        <div class="command-params">
+                                            <strong>參數：</strong>
+                                            <ul>
+                                                <li><code>用戶</code> (必需) - 要封鎖的用戶</li>
+                                                <li><code>原因</code> (可選) - 封鎖原因</li>
+                                                <li><code>時間</code> (可選) - 封鎖時長 (如: 1d, 1w, 1m)</li>
+                                            </ul>
+                                        </div>
+                                        <div class="command-example">
+                                            <strong>範例：</strong>
+                                            <div class="code-block">/blacklist 用戶:@惡意用戶 原因:濫用工單系統 時間:7d</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="command-card">
+                                        <div class="command-header">
+                                            <h4>/unblacklist</h4>
+                                            <span class="command-badge admin">管理員</span>
+                                        </div>
+                                        <p class="command-description">將用戶從黑名單中移除</p>
+                                        <div class="command-usage">
+                                            <strong>用法：</strong>
+                                            <code>/unblacklist &lt;用戶&gt;</code>
+                                        </div>
+                                        <div class="command-example">
+                                            <strong>範例：</strong>
+                                            <div class="code-block">/unblacklist 用戶:@用戶名</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- 工單指令 -->
+                            <section class="command-section">
+                                <h3><i class="fas fa-ticket-alt"></i> 工單指令</h3>
+                                <div class="command-grid">
+                                    <div class="command-card">
+                                        <div class="command-header">
+                                            <h4>/close</h4>
+                                            <span class="command-badge staff">管理員/用戶</span>
+                                        </div>
+                                        <p class="command-description">關閉當前工單並生成對話記錄</p>
+                                        <div class="command-usage">
+                                            <strong>用法：</strong>
+                                            <code>/close [原因]</code>
+                                        </div>
+                                        <div class="command-params">
+                                            <strong>參數：</strong>
+                                            <ul>
+                                                <li><code>原因</code> (可選) - 關閉原因</li>
+                                            </ul>
+                                        </div>
+                                        <div class="command-example">
+                                            <strong>範例：</strong>
+                                            <div class="code-block">/close 原因:問題已解決</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="command-card">
+                                        <div class="command-header">
+                                            <h4>/claim</h4>
+                                            <span class="command-badge staff">管理員</span>
+                                        </div>
+                                        <p class="command-description">領取當前工單，標記為自己負責</p>
+                                        <div class="command-usage">
+                                            <strong>用法：</strong>
+                                            <code>/claim</code>
+                                        </div>
+                                        <div class="command-example">
+                                            <strong>範例：</strong>
+                                            <div class="code-block">/claim</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="command-card">
+                                        <div class="command-header">
+                                            <h4>/unclaim</h4>
+                                            <span class="command-badge staff">管理員</span>
+                                        </div>
+                                        <p class="command-description">取消領取工單，釋放給其他管理員</p>
+                                        <div class="command-usage">
+                                            <strong>用法：</strong>
+                                            <code>/unclaim</code>
+                                        </div>
+                                        <div class="command-example">
+                                            <strong>範例：</strong>
+                                            <div class="code-block">/unclaim</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="command-card">
+                                        <div class="command-header">
+                                            <h4>/rename</h4>
+                                            <span class="command-badge staff">管理員</span>
+                                        </div>
+                                        <p class="command-description">重新命名工單頻道</p>
+                                        <div class="command-usage">
+                                            <strong>用法：</strong>
+                                            <code>/rename &lt;新名稱&gt;</code>
+                                        </div>
+                                        <div class="command-params">
+                                            <strong>參數：</strong>
+                                            <ul>
+                                                <li><code>新名稱</code> (必需) - 新的頻道名稱</li>
+                                            </ul>
+                                        </div>
+                                        <div class="command-example">
+                                            <strong>範例：</strong>
+                                            <div class="code-block">/rename 新名稱:urgent-support</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- 資訊指令 -->
+                            <section class="command-section">
+                                <h3><i class="fas fa-info-circle"></i> 資訊指令</h3>
+                                <div class="command-grid">
+                                    <div class="command-card">
+                                        <div class="command-header">
+                                            <h4>/help</h4>
+                                            <span class="command-badge public">所有人</span>
+                                        </div>
+                                        <p class="command-description">顯示指令幫助信息</p>
+                                        <div class="command-usage">
+                                            <strong>用法：</strong>
+                                            <code>/help [指令名稱]</code>
+                                        </div>
+                                        <div class="command-example">
+                                            <strong>範例：</strong>
+                                            <div class="code-block">/help 指令名稱:setup</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="command-card">
+                                        <div class="command-header">
+                                            <h4>/stats</h4>
+                                            <span class="command-badge staff">管理員</span>
+                                        </div>
+                                        <p class="command-description">顯示工單系統統計信息</p>
+                                        <div class="command-usage">
+                                            <strong>用法：</strong>
+                                            <code>/stats [時間範圍]</code>
+                                        </div>
+                                        <div class="command-params">
+                                            <strong>參數：</strong>
+                                            <ul>
+                                                <li><code>時間範圍</code> (可選) - today/week/month/all</li>
+                                            </ul>
+                                        </div>
+                                        <div class="command-example">
+                                            <strong>範例：</strong>
+                                            <div class="code-block">/stats 時間範圍:week</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="command-card">
+                                        <div class="command-header">
+                                            <h4>/info</h4>
+                                            <span class="command-badge public">所有人</span>
+                                        </div>
+                                        <p class="command-description">顯示 Bot 和系統信息</p>
+                                        <div class="command-usage">
+                                            <strong>用法：</strong>
+                                            <code>/info</code>
+                                        </div>
+                                        <div class="command-example">
+                                            <strong>範例：</strong>
+                                            <div class="code-block">/info</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- 權限說明 -->
+                            <section class="command-section">
+                                <h3><i class="fas fa-shield-alt"></i> 權限說明</h3>
+                                <div class="permission-grid">
+                                    <div class="permission-card">
+                                        <div class="permission-badge admin">管理員</div>
+                                        <h4>系統管理員</h4>
+                                        <ul>
+                                            <li>所有指令權限</li>
+                                            <li>系統設定管理</li>
+                                            <li>用戶權限管理</li>
+                                            <li>黑名單管理</li>
+                                        </ul>
+                                    </div>
+                                    <div class="permission-card">
+                                        <div class="permission-badge staff">管理員</div>
+                                        <h4>一般管理員</h4>
+                                        <ul>
+                                            <li>工單處理權限</li>
+                                            <li>領取/關閉工單</li>
+                                            <li>查看統計數據</li>
+                                            <li>重命名工單</li>
+                                        </ul>
+                                    </div>
+                                    <div class="permission-card">
+                                        <div class="permission-badge public">所有人</div>
+                                        <h4>一般用戶</h4>
+                                        <ul>
+                                            <li>創建工單</li>
+                                            <li>關閉自己的工單</li>
+                                            <li>查看幫助信息</li>
+                                            <li>查看系統信息</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 載入動畫 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>載入中...</p>
+        </div>
+    </div>
+
+    <!-- 通知系統 -->
+    <div class="notification" id="notification">
+        <div class="notification-content">
+            <i class="notification-icon"></i>
+            <span class="notification-text"></span>
+        </div>
+        <button class="notification-close" onclick="hideNotification()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
